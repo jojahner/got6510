@@ -6,9 +6,9 @@
 !source "src/worlds/pulse.asm"  ; include world into .world
 
 *=$0801
-    ; basic upstart
-    !byte $0d, $08, $0a, $00, $9e, $32, $30, $36, $32, $00, $00, $00, $00
-*=$080e
+    ; BASIC upstart  10 SYS 2064
+    !byte $0d, $08, $0a, $00, $9e, $32, $30, $36, $34, $00, $00, $00, $00
+*=$0810
 
 start
     ; Set background and border to black
@@ -21,11 +21,9 @@ start
     sta $0286   ; Set cursor color
 
     jsr $e544   ; clear screen
+    jsr setup_irq
 
-tick
-    jsr draw_next_generation
-    jsr caluclate_next_generation
-    jmp tick       ; loop forever
+    jmp *       ; loop forever
 
 ; variables
 .world                = $8000
@@ -183,4 +181,36 @@ copy_world_line
 
     jmp copy_world
 draw_next_generation_done
+    rts
+
+raster_irq
+    dec $d019
+    jsr draw_next_generation
+    jsr caluclate_next_generation
+    jmp $ea81
+
+setup_irq
+    sei                 ; disable interrupts
+
+    lda #%01111111
+    sta $dc0d          ; turn off timer interrupt
+    lda $dc0d          ; cancel pending interrups
+
+    lda #<raster_irq    ; set interrupt vector
+    sta $0314
+    lda #>raster_irq
+    sta $0315
+
+    lda #245           ; 245 = vblank
+    sta $d012          ; set rasterline where we want the interrupt to fire
+
+    lda $d011
+    and #%01111111
+    sta $d011          ; clear bit 7 (bit number 8 of raster line counter )
+
+    lda $d01a
+    ora #%00000001
+    sta $d01a         ; enable Raster interrupt
+
+    cli
     rts
