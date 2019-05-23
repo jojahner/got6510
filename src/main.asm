@@ -3,7 +3,8 @@
 !source "src/macros.asm"
 
 *=$8000
-!source "src/worlds/pulse.asm"  ; include world into .world
+!source "src/pulse_world.asm"       ; starts at 0x8000
+!source "src/glider_gun_world.asm"  ; starts at 0x83E9
 
 *=$0801
     ; BASIC upstart  10 SYS 2064
@@ -22,13 +23,13 @@ start
 
     jsr $e544   ; clear screen
     jsr setup_irq
-
+    lda #00
     jmp *       ; loop forever
 
 ; variables
-.world                = $8000
-.next_generation      = $02 ; pointer to our back buffer
-.current_generation   = $04 ; pointer to video RAM
+.world                = $8000   ; pointer to our world
+.next_generation      = $02     ; pointer to our back buffer
+.current_generation   = $04     ; pointer to video RAM
 .row_pointer          = $06
 
 .neighbour_conter   !byte $00
