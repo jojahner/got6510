@@ -25,3 +25,11 @@
     lda #>.value
     sta .location + 1
 }
+
+!macro count_neighbour .location, .next_check, .counter {
+    lda (.location), Y
+    cmp #DEAD_CELL ; if the cell if dead we check the next one
+    beq .next_check
+
+    inc .counter
+}
