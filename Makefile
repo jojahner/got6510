@@ -11,6 +11,6 @@ debug: bin/got.prg
 	~/Applications/C64Debugger.app/Contents/MacOS/C64Debugger -prg bin/got.prg -symbols bin/got.labels -breakpoints bin/breakpoints.txt
 
 clean:
-	rm bin/*.labels
-	rm bin/*.bin
-	rm bin/*.prg
+	rm -f bin/*.labels
+	rm -f bin/*.bin
+	rm -f bin/*.prg
